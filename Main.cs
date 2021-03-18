@@ -3,7 +3,6 @@ using UnityEngine;
 using System;
 using System.Collections;
 using UnityEngine.UI;
-using System.Windows.Forms;
 
 namespace KeyboardPaste
 {
@@ -67,9 +66,9 @@ namespace KeyboardPaste
                 {
                     try
                     {
-                        if (Clipboard.GetText().Length <= 64)
+                        if (GUIUtility.systemCopyBuffer.Length <= 64)
                         {
-                            GameObject.Find("UserInterface/MenuContent/Popups/InputPopup/InputField").GetComponent<InputField>().text = Clipboard.GetText();
+                            GameObject.Find("UserInterface/MenuContent/Popups/InputPopup/InputField").GetComponent<InputField>().text = GUIUtility.systemCopyBuffer;
                         }
                         else MelonLogger.Warning("You cannot paste something more than 64 characters long in the keyboard.");
                     }

@@ -23,6 +23,9 @@ buttonVisible - Toggle the Paste Button
 ![Preview GIF](https://kortyboi.com/img/upload/VRChat_HkeMuiZt4f.png)
 
 # Change Log
+### v1.0.1
+* Fixed crashing issue when trying to paste an image from your clipboard - _Thanks Dubya_
+
 ### v1.0.0
 * Initial Release<br>
 Known Issue: **DO NOT** try and paste an image being in your clipboard, your game will crash.

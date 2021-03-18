@@ -11,7 +11,7 @@ namespace KeyboardPaste
         public const string Name = "KeyboardPaste"; // Name of the Mod.  (MUST BE SET)
         public const string Author = "Korty (Lily)"; // Author of the Mod.  (Set as null if none)
         public const string Company = null; // Company that made the Mod.  (Set as null if none)
-        public const string Version = "1.0.0"; // Version of the Mod.  (MUST BE SET)
+        public const string Version = "1.0.1"; // Version of the Mod.  (MUST BE SET)
         public const string DownloadLink = "https://github.com/KortyBoi/KeyboardPaste"; // Download Link for the Mod.  (Set as null if none)
         public const string Description = "Simple utility that adds a paste button on VRChat's in-game keyboard.";
     }

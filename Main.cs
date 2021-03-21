@@ -11,7 +11,7 @@ namespace KeyboardPaste
         public const string Name = "KeyboardPaste"; // Name of the Mod.  (MUST BE SET)
         public const string Author = "Korty (Lily)"; // Author of the Mod.  (Set as null if none)
         public const string Company = null; // Company that made the Mod.  (Set as null if none)
-        public const string Version = "1.0.1"; // Version of the Mod.  (MUST BE SET)
+        public const string Version = "1.0.2"; // Version of the Mod.  (MUST BE SET)
         public const string DownloadLink = "https://github.com/KortyBoi/KeyboardPaste"; // Download Link for the Mod.  (Set as null if none)
         public const string Description = "Simple utility that adds a paste button on VRChat's in-game keyboard.";
     }
@@ -47,7 +47,11 @@ namespace KeyboardPaste
             if (keybardPasteButton == null && visible.Value == true)
                 MelonCoroutines.Start(CreateButton(true));
             else if (keybardPasteButton != null && visible.Value == false)
+            {
                 GameObject.Destroy(keybardPasteButton);
+                if (isDebug)
+                    MelonLogger.Msg("Destroyed the button.");
+            }
         }
 
         private IEnumerator CreateButton(bool ignoreWait = false)
@@ -60,20 +64,22 @@ namespace KeyboardPaste
                 keybardPasteButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(335f, -275f);
                 keybardPasteButton.GetComponentInChildren<Text>().text = "Paste";
                 keybardPasteButton.name = "KeyboardPasteButton";
-                keybardPasteButton.GetComponent<UnityEngine.UI.Button>().onClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-                keybardPasteButton.GetComponent<UnityEngine.UI.Button>().m_Interactable = true;
-                keybardPasteButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(new System.Action(() =>
+                keybardPasteButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
+                keybardPasteButton.GetComponent<Button>().m_Interactable = true;
+                keybardPasteButton.GetComponent<Button>().onClick.AddListener(new Action(() =>
                 {
                     try
                     {
-                        if (GUIUtility.systemCopyBuffer.Length <= 64)
+                        if (GUIUtility.systemCopyBuffer.Length < 256)
                         {
                             GameObject.Find("UserInterface/MenuContent/Popups/InputPopup/InputField").GetComponent<InputField>().text = GUIUtility.systemCopyBuffer;
                         }
-                        else MelonLogger.Warning("You cannot paste something more than 64 characters long in the keyboard.");
+                        else MelonLogger.Warning("You cannot paste something more than 256 characters long in the keyboard.");
                     }
                     catch (Exception e) { MelonLogger.Error("An error has occurred:\n" + e.ToString()); }
                 }));
+                if (isDebug)
+                    MelonLogger.Msg("Created the button.");
             }
             catch (Exception e)
             {

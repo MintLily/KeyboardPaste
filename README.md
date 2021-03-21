@@ -23,6 +23,9 @@ buttonVisible - Toggle the Paste Button
 ![Preview GIF](https://kortyboi.com/img/upload/VRChat_HkeMuiZt4f.png)
 
 # Change Log
+### v1.0.2
+* Change Character limit from 64 to 256
+
 ### v1.0.1
 * Fixed crashing issue when trying to paste an image from your clipboard - _Thanks Dubya_
 

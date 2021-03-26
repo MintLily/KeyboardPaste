@@ -32,3 +32,7 @@ buttonVisible - Toggle the Paste Button
 ### v1.0.0
 * Initial Release<br>
 Known Issue: **DO NOT** try and paste an image being in your clipboard, your game will crash.
+
+
+## Stay Updated
+Stay update to date with all my mods by joining my [discord server](https://discord.gg/qkycuAMUGS) today.

@@ -9,10 +9,10 @@ namespace KeyboardPaste
     public static class BuildInfo
     {
         public const string Name = "KeyboardPaste"; // Name of the Mod.  (MUST BE SET)
-        public const string Author = "Korty (Lily)"; // Author of the Mod.  (Set as null if none)
+        public const string Author = "Lily"; // Author of the Mod.  (Set as null if none)
         public const string Company = null; // Company that made the Mod.  (Set as null if none)
         public const string Version = "1.0.2"; // Version of the Mod.  (MUST BE SET)
-        public const string DownloadLink = "https://github.com/KortyBoi/KeyboardPaste"; // Download Link for the Mod.  (Set as null if none)
+        public const string DownloadLink = "https://github.com/MintLily/KeyboardPaste"; // Download Link for the Mod.  (Set as null if none)
         public const string Description = "Simple utility that adds a paste button on VRChat's in-game keyboard.";
     }
 
@@ -30,7 +30,7 @@ namespace KeyboardPaste
                 isDebug = true;
                 MelonLogger.Msg("Debug mode is active");
             }
-            
+
             melon = MelonPreferences.CreateCategory(BuildInfo.Name, BuildInfo.Name);
             visible = (MelonPreferences_Entry<bool>)melon.CreateEntry("buttonVisible", true, "Is Paste Button Visible");
 

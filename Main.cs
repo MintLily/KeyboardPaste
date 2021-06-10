@@ -2,17 +2,19 @@ using MelonLoader;
 using UnityEngine;
 using System;
 using System.Collections;
+using System.Reflection;
+using System.Linq;
 using UnityEngine.UI;
 
 namespace KeyboardPaste
 {
     public static class BuildInfo
     {
-        public const string Name = "KeyboardPaste"; // Name of the Mod.  (MUST BE SET)
-        public const string Author = "Lily"; // Author of the Mod.  (Set as null if none)
-        public const string Company = null; // Company that made the Mod.  (Set as null if none)
-        public const string Version = "1.0.2"; // Version of the Mod.  (MUST BE SET)
-        public const string DownloadLink = "https://github.com/MintLily/KeyboardPaste"; // Download Link for the Mod.  (Set as null if none)
+        public const string Name = "KeyboardPaste";
+        public const string Author = "Lily";
+        public const string Company = null;
+        public const string Version = "1.0.3";
+        public const string DownloadLink = "https://github.com/MintLily/KeyboardPaste";
         public const string Description = "Simple utility that adds a paste button on VRChat's in-game keyboard.";
     }
 
@@ -31,16 +33,16 @@ namespace KeyboardPaste
                 MelonLogger.Msg("Debug mode is active");
             }
 
+            if (typeof(MelonMod).GetMethod("VRChat_OnUiManagerInit") == null)
+                MelonCoroutines.Start(GetAssembly());
+
             melon = MelonPreferences.CreateCategory(BuildInfo.Name, BuildInfo.Name);
             visible = (MelonPreferences_Entry<bool>)melon.CreateEntry("buttonVisible", true, "Is Paste Button Visible");
 
             MelonLogger.Msg("Initialized!");
         }
 
-        public override void VRChat_OnUiManagerInit()
-        {
-            MelonCoroutines.Start(CreateButton());
-        }
+        private void OnUiManagerInit() => MelonCoroutines.Start(CreateButton());
 
         public override void OnPreferencesSaved()
         {
@@ -91,6 +93,29 @@ namespace KeyboardPaste
         public VRCUiPopupManager VRCUiPopupManager
         {
             get { return VRCUiPopupManager.field_Private_Static_VRCUiPopupManager_0; }
+        }
+
+        private IEnumerator GetAssembly()
+        {
+            Assembly assemblyCSharp = null;
+            while (true) {
+                assemblyCSharp = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == "Assembly-CSharp");
+                if (assemblyCSharp == null)
+                    yield return null;
+                else
+                    break;
+            }
+
+            MelonCoroutines.Start(WaitForUiManagerInit(assemblyCSharp));
+        }
+
+        private IEnumerator WaitForUiManagerInit(Assembly assemblyCSharp)
+        {
+            Type vrcUiManager = assemblyCSharp.GetType("VRCUiManager");
+            PropertyInfo uiManagerSingleton = vrcUiManager.GetProperties().First(pi => pi.PropertyType == vrcUiManager);
+            while (uiManagerSingleton.GetValue(null) == null)
+                yield return null;
+            OnUiManagerInit();
         }
     }
 }

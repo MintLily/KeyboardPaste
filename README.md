@@ -6,14 +6,14 @@ Need to install MelonLoader?<br>
 Click [this link](https://melonwiki.xyz/) to get started!
 
 ### Prerequisites
-MelonLoader: v0.3.0 (Alpha)<br>
-Game: VRChat (2021.1.4 [build 1061+])
+MelonLoader: v0.3.0+ (Alpha)<br>
+Game: VRChat bulld 1102+
 
 ### Optional Prerequisites
 [UIExpansionKit](https://github.com/knah/VRCMods)
 
 ### MelonPreferences (Default Values)
-```
+```ini
 [KeyboardPaste]
 buttonVisible = true
 ```
@@ -23,6 +23,9 @@ buttonVisible - Toggle the Paste Button
 ![Preview GIF](https://kortyboi.com/img/upload/VRChat_HkeMuiZt4f.png)
 
 # Change Log
+### v1.0.3
+* Added support for MelonLoader v0.4.0
+
 ### v1.0.2
 * Change Character limit from 64 to 256
 

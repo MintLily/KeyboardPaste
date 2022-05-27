@@ -1,4 +1,6 @@
 .vs/
+.idea/
 Output/
 obj/
 .git/
+KeyboardPaste.json

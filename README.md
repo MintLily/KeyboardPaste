@@ -1,13 +1,13 @@
 # KeyboardPaste
-Simple utility that adds a paste button on VRChat's in-game keyboard.
+Simple utility that adds a paste and copy button on VRChat's in-game keyboard.
 
 ### MelonLoader
 Need to install MelonLoader?<br>
 Click [this link](https://melonwiki.xyz/) to get started!
 
 ### Prerequisites
-MelonLoader: v0.3.0+ (Alpha)<br>
-Game: VRChat bulld 1102+
+MelonLoader: v0.5.4+ (Alpha)<br>
+Game: VRChat bulld 1202+
 
 ### Optional Prerequisites
 [UIExpansionKit](https://github.com/knah/VRCMods)
@@ -16,13 +16,18 @@ Game: VRChat bulld 1102+
 ```ini
 [KeyboardPaste]
 buttonVisible = true
+copyButtonVisible = true
 ```
-buttonVisible - Toggle the Paste Button
+buttonVisible - Toggle the Paste Button<br>
+copyButtonVisible - Toggle the Copy Button
 
 ### Preview
-![Preview GIF](https://kortyboi.com/img/upload/VRChat_HkeMuiZt4f.png)
+![Preview GIF](https://i.mintlily.lgbt/ztJR4FG15oPN.png)
 
 # Change Log
+## v1.1.0
+* Added Copy button
+
 ### v1.0.3
 * Added support for MelonLoader v0.4.0
 

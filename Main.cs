@@ -1,120 +1,127 @@
 using MelonLoader;
 using UnityEngine;
 using System;
-using System.Collections;
-using System.Reflection;
-using System.Linq;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
-namespace KeyboardPaste
-{
-    public static class BuildInfo
-    {
-        public const string Name = "KeyboardPaste";
+namespace KeyboardPaste {
+    public static class BuildInfo {
+        public const string Name = "KeyboardUtils";
         public const string Author = "Lily";
-        public const string Company = null;
-        public const string Version = "1.0.3";
+        public const string Company = "Minty Labs";
+        public const string Version = "1.1.0";
         public const string DownloadLink = "https://github.com/MintLily/KeyboardPaste";
-        public const string Description = "Simple utility that adds a paste button on VRChat's in-game keyboard.";
+        public const string Description = "Simple utility that adds a paste and copy button on VRChat's in-game keyboard.";
     }
 
-    public class Main : MelonMod
-    {
-        public bool isDebug;
-        public MelonPreferences_Category melon;
-        public MelonPreferences_Entry<bool> visible;
-        private GameObject keybardPasteButton;
+    public class Main : MelonMod {
+        private bool _isDebug;
+        public MelonPreferences_Category Melon;
+        public MelonPreferences_Entry<bool> PasteVisible, CopyVisible;
+        private GameObject _keybardPasteButton, _keybardCopyButton;
+        private int _scenesLoaded = 0;
+        private static readonly MelonLogger.Instance Logger = new MelonLogger.Instance(BuildInfo.Name, ConsoleColor.Yellow);
 
         public override void OnApplicationStart() // Runs after Game Initialization.
         {
-            if (MelonDebug.IsEnabled())
-            {
-                isDebug = true;
-                MelonLogger.Msg("Debug mode is active");
+            if (MelonDebug.IsEnabled()) {
+                _isDebug = true;
+                Log("Debug mode is active", true);
             }
 
-            MelonCoroutines.Start(GetAssembly());
-
-            melon = MelonPreferences.CreateCategory(BuildInfo.Name, BuildInfo.Name);
-            visible = (MelonPreferences_Entry<bool>)melon.CreateEntry("buttonVisible", true, "Is Paste Button Visible");
+            Melon = MelonPreferences.CreateCategory(BuildInfo.Name, BuildInfo.Name);
+            PasteVisible = Melon.CreateEntry("buttonVisible", true, "Is Paste Button Visible");
+            CopyVisible = Melon.CreateEntry("copyButtonVisible", true, "Is Copy Button Visible");
 
             MelonLogger.Msg("Initialized!");
         }
 
-        private void OnUiManagerInit() => MelonCoroutines.Start(CreateButton());
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
+            if (_scenesLoaded > 2) return;
+            _scenesLoaded++;
+            if (_scenesLoaded != 2) return;
+            CreatePasteButton();
+            CreateCopyButton();
+        }
 
-        public override void OnPreferencesSaved()
-        {
-            if (keybardPasteButton == null && visible.Value == true)
-                MelonCoroutines.Start(CreateButton(true));
-            else if (keybardPasteButton != null && visible.Value == false)
-            {
-                GameObject.Destroy(keybardPasteButton);
-                if (isDebug)
-                    MelonLogger.Msg("Destroyed the button.");
+        public override void OnPreferencesSaved() {
+            // Paste Button
+            if (_keybardPasteButton == null && PasteVisible.Value)
+                CreatePasteButton();
+            else if (_keybardPasteButton != null && !PasteVisible.Value) {
+                Object.Destroy(_keybardPasteButton);
+                Log("Destroyed the paste button.", _isDebug);
+            }
+            
+            // Copy Button
+            if (_keybardCopyButton == null && CopyVisible.Value)
+                CreateCopyButton();
+            else if (_keybardCopyButton != null && !CopyVisible.Value) {
+                Object.Destroy(_keybardCopyButton);
+                Log("Destroyed the copy button.", _isDebug);
             }
         }
 
-        private IEnumerator CreateButton(bool ignoreWait = false)
-        {
-            if (!ignoreWait) yield return new WaitForSeconds(8f);
-            try
-            {
+        private void CreatePasteButton() {
+            try {
                 // Hey skids, if you're gonna take this and add to your mod, at least give me some credit. Much appreciated!
-                keybardPasteButton = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("/UserInterface/MenuContent/Popups/InputPopup/ButtonLeft"), VRCUiPopupManager.field_Public_VRCUiPopupInput_0.transform);
-                keybardPasteButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(335f, -275f);
-                keybardPasteButton.GetComponentInChildren<Text>().text = "Paste";
-                keybardPasteButton.name = "KeyboardPasteButton";
-                keybardPasteButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
-                keybardPasteButton.GetComponent<Button>().m_Interactable = true;
-                keybardPasteButton.GetComponent<Button>().onClick.AddListener(new Action(() =>
-                {
-                    try
-                    {
+                _keybardPasteButton = Object.Instantiate(GameObject.Find("/UserInterface/MenuContent/Popups/InputPopup/ButtonLeft"),
+                    VRCUiPopupManager.field_Public_VRCUiPopupInput_0.transform);
+                _keybardPasteButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(335f, -275f);
+                _keybardPasteButton.GetComponentInChildren<Text>().text = "Paste";
+                _keybardPasteButton.name = "KeyboardPasteButton";
+                _keybardPasteButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
+                _keybardPasteButton.GetComponent<Button>().m_Interactable = true;
+                _keybardPasteButton.GetComponent<Button>().onClick.AddListener(new Action(() => {
+                    try {
                         if (GUIUtility.systemCopyBuffer.Length < 256)
-                        {
                             GameObject.Find("UserInterface/MenuContent/Popups/InputPopup/InputField").GetComponent<InputField>().text = GUIUtility.systemCopyBuffer;
-                        }
-                        else MelonLogger.Warning("You cannot paste something more than 256 characters long in the keyboard.");
+                        else
+                            Logger.Warning("You cannot paste something more than 256 characters long in the keyboard.");
                     }
-                    catch (Exception e) { MelonLogger.Error("An error has occurred:\n" + e.ToString()); }
+                    catch (Exception e) {
+                        Logger.Error($"An error has occurred:\n{e}");
+                    }
                 }));
-                if (isDebug)
-                    MelonLogger.Msg("Created the button.");
+                Log("Created the paste button.", _isDebug);
             }
-            catch (Exception e)
-            {
-                MelonLogger.Error("Keyboard Paste Button failure:\n" + e.ToString());
+            catch (Exception e) {
+                Logger.Error($"Paste:\n{e}");
             }
-            yield break;
         }
 
-        public VRCUiPopupManager VRCUiPopupManager
-        {
-            get { return VRCUiPopupManager.field_Private_Static_VRCUiPopupManager_0; }
-        }
-
-        private IEnumerator GetAssembly()
-        {
-            Assembly assemblyCSharp = null;
-            while (true) {
-                assemblyCSharp = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == "Assembly-CSharp");
-                if (assemblyCSharp == null)
-                    yield return null;
-                else
-                    break;
+        private void CreateCopyButton() {
+            try {
+                _keybardCopyButton = Object.Instantiate(GameObject.Find("/UserInterface/MenuContent/Popups/InputPopup/ButtonLeft"),
+                    VRCUiPopupManager.field_Public_VRCUiPopupInput_0.transform);
+                _keybardCopyButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-335f, -275f);
+                _keybardCopyButton.GetComponentInChildren<Text>().text = "Copy";
+                _keybardCopyButton.name = "KeyboardCopyButton";
+                _keybardCopyButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
+                _keybardCopyButton.GetComponent<Button>().m_Interactable = true;
+                _keybardCopyButton.GetComponent<Button>().onClick.AddListener(new Action(() => {
+                    try {
+                        GUIUtility.systemCopyBuffer = GameObject.Find("UserInterface/MenuContent/Popups/InputPopup/InputField").GetComponent<InputField>().text;
+                    }
+                    catch (Exception e) {
+                        Logger.Error($"An error has occurred:\n{e}");
+                    }
+                }));
+                Log("Created the copy button.", _isDebug);
             }
-
-            MelonCoroutines.Start(WaitForUiManagerInit(assemblyCSharp));
+            catch (Exception e) {
+                Logger.Error($"Copy:\n{e}");
+            }
         }
 
-        private IEnumerator WaitForUiManagerInit(Assembly assemblyCSharp)
-        {
-            Type vrcUiManager = assemblyCSharp.GetType("VRCUiManager");
-            PropertyInfo uiManagerSingleton = vrcUiManager.GetProperties().First(pi => pi.PropertyType == vrcUiManager);
-            while (uiManagerSingleton.GetValue(null) == null)
-                yield return null;
-            OnUiManagerInit();
+        private VRCUiPopupManager VRCUiPopupManager => VRCUiPopupManager.field_Private_Static_VRCUiPopupManager_0;
+
+        private void Log(string message, bool isDebug = false) {
+            if (isDebug) {
+                Logger.Msg(ConsoleColor.Green, message);
+                return;
+            }
+            Logger.Msg(message);
         }
     }
 }
